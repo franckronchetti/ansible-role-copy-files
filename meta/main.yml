@@ -1,0 +1,15 @@
+galaxy_info:
+  author: "franckronchetti"
+  description: Copy files to the target machine
+  license: "MIT"
+  min_ansible_version: 1.4
+  github_branch: main
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - system
+    - file
+    - template
+dependencies: []
