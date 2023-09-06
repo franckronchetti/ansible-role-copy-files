@@ -23,3 +23,16 @@
     label: "{{ item.destination_path }}"
   register: copy_files
   notify: restart docker compose
+
+- name: Copying templates
+  ansible.builtin.template:
+    src: "{{ item.source_path }}"
+    dest: "{{ item.destination_path }}"
+    owner: "{{ owner }}"
+    group: docker
+    mode: 0640
+  when: templates
+  loop: "{{ templates }}"
+  loop_control:
+    label: "{{ item.destination_path }}"
+  register: copy_templates

@@ -9,8 +9,14 @@ Available variables are listed below, along with default values (see `defaults/m
 `owner`
 If it's a new app deployed with our infra CD, set it to *gitlab-ci* ; *github-ci* otherwise
 
-`files`     
+`files`
 A list of files to copy, each file has to have the following properties
+* `source_path` (string)
+* `destination_path` (string)
+
+
+`templates`
+A list of jinja templates to use and copy the generated file to the destination path.
 * `source_path` (string)
 * `destination_path` (string)
 
@@ -34,6 +40,9 @@ A list of files to copy, each file has to have the following properties
       destination_path: /app/MY_APP_DIR/gcloud/application_default_credentials.json
     - source_path: "{{ playbook_dir }}/files/MY_ENV/secrets/dotenv"
       destination_path: /app/MY_APP_DIR/.env.secrets
+    templates:
+    - source_path: "{{ playbook_dir }}/templates/app.yml.j2"
+      destination_path: /app/MY_APP_DIR/my_app.yml
 
 ## Install
 
