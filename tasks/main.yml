@@ -1,5 +1,5 @@
 ---
-- name: Making sure the required directories exist
+- name: Making sure the required directories exist for files
   ansible.builtin.file:
     path: "{{ item | dirname }}"
     owner: "{{ item.owner | default(owner) }}"
@@ -22,7 +22,18 @@
   loop_control:
     label: "{{ item.destination_path }}"
   register: copy_files
-  notify: restart docker compose
+  notify: restart containers after updating files
+
+- name: Making sure the required directories exist for templates
+  ansible.builtin.file:
+    path: "{{ item | dirname }}"
+    owner: "{{ item.owner | default(owner) }}"
+    group: "{{ item.group | default(group) }}"
+    state: directory
+    mode: 0755
+  loop: "{{ templates | map(attribute='destination_path') | list | unique }}"
+  loop_control:
+    label: "{{ item | dirname }}"
 
 - name: Copying templates
   ansible.builtin.template:
@@ -36,4 +47,4 @@
   loop_control:
     label: "{{ item.destination_path }}"
   register: copy_templates
-  notify: restart docker compose
+  notify: restart containers after updating templates

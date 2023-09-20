@@ -1,6 +1,12 @@
 ---
-- name: restart docker compose
+- name: restart containers after updating files
   ansible.builtin.command:
     cmd: docker compose -f {{ item }} up -d --force-recreate
   loop: "{{ copy_files.results | selectattr('changed', 'equalto', true) | map(attribute='item') | map(attribute='destination_path') | list }}"
+  when: item | regex_search('docker-compose.ya?ml')
+
+- name: restart containers after updating templates
+  ansible.builtin.command:
+    cmd: docker compose -f {{ item }} up -d --force-recreate
+  loop: "{{ copy_templates.results | selectattr('changed', 'equalto', true) | map(attribute='item') | map(attribute='destination_path') | list }}"
   when: item | regex_search('docker-compose.ya?ml')
