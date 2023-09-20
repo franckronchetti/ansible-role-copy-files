@@ -1,3 +1,5 @@
 ---
+owner: gitlab-ci
+group: docker
 files: []
 templates : []

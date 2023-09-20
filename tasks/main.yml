@@ -2,8 +2,8 @@
 - name: Making sure the required directories exist
   ansible.builtin.file:
     path: "{{ item | dirname }}"
-    owner: "{{ owner }}"
-    group: docker
+    owner: "{{ item.owner | default(owner) }}"
+    group: "{{ item.group | default(group) }}"
     state: directory
     mode: 0755
   loop: "{{ files | map(attribute='destination_path') | list | unique }}"
@@ -14,8 +14,8 @@
   ansible.builtin.copy:
     src: "{{ item.source_path }}"
     dest: "{{ item.destination_path }}"
-    owner: "{{ owner }}"
-    group: docker
+    owner: "{{ item.owner | default(owner) }}"
+    group: "{{ item.group | default(group) }}"
     # Secrets must be readable by all users to be used by the docker container
     mode: 0644
   loop: "{{ files }}"
@@ -28,11 +28,12 @@
   ansible.builtin.template:
     src: "{{ item.source_path }}"
     dest: "{{ item.destination_path }}"
-    owner: "{{ owner }}"
-    group: docker
-    mode: 0640
+    owner: "{{ item.owner | default(owner) }}"
+    group: "{{ item.group | default(group) }}"
+    mode: 0644
   when: templates
   loop: "{{ templates }}"
   loop_control:
     label: "{{ item.destination_path }}"
   register: copy_templates
+  notify: restart docker compose

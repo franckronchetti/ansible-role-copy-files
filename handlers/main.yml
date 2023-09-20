@@ -1,6 +1,6 @@
 ---
 - name: restart docker compose
   ansible.builtin.command:
-    cmd: docker compose -f {{ item }} up -d
+    cmd: docker compose -f {{ item }} up -d --force-recreate
   loop: "{{ copy_files.results | selectattr('changed', 'equalto', true) | map(attribute='item') | map(attribute='destination_path') | list }}"
   when: item | regex_search('docker-compose.ya?ml')

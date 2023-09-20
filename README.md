@@ -1,24 +1,30 @@
 # Ansible Role: Copy Files
 
-Copy files on the target machine.
+Copy files on the remote machine.
 
 ## Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 `owner`
-If it's a new app deployed with our infra CD, set it to *gitlab-ci* ; *github-ci* otherwise
+If it's a new app deployed with our infra CD, it has to be set to *gitlab-ci*
+
+`group`
+If it's a new app deployed with our infra CD, it has to be set to *docker*
 
 `files`
 A list of files to copy, each file has to have the following properties
 * `source_path` (string)
 * `destination_path` (string)
-
+* `owner` (string) - optional
+* `group` (string) - optional
 
 `templates`
-A list of jinja templates to use and copy the generated file to the destination path.
+A list of jinja templates to use and copy the dynamized file to the destination path.
 * `source_path` (string)
 * `destination_path` (string)
+* `owner` (string) - optional
+* `group` (string) - optional
 
 
 ## Example Playbook
@@ -34,15 +40,19 @@ A list of jinja templates to use and copy the generated file to the destination 
 *Inside `./env_vars/MY_ENV/copy_files.yml`*:
 
     ---
-    owner: gitlab-ci
     files:
-    - source_path: "{{ playbook_dir }}/files/MY_ENV/secrets/service-account.json"
-      destination_path: /app/MY_APP_DIR/gcloud/application_default_credentials.json
-    - source_path: "{{ playbook_dir }}/files/MY_ENV/secrets/dotenv"
-      destination_path: /app/MY_APP_DIR/.env.secrets
+      - source_path: "{{ playbook_dir }}/files/MY_ENV/secrets/service-account.json"
+        destination_path: /app/MY_APP_DIR/gcloud/application_default_credentials.json
+        owner: my_app_user
+        group: my_group
+      - source_path: "{{ playbook_dir }}/files/MY_ENV/secrets/dotenv"
+        destination_path: /app/MY_APP_DIR/.env.secrets
+
     templates:
-    - source_path: "{{ playbook_dir }}/templates/app.yml.j2"
-      destination_path: /app/MY_APP_DIR/my_app.yml
+      - source_path: "{{ playbook_dir }}/templates/app.yml.j2"
+        destination_path: /app/MY_APP_DIR/my_app.yml
+        owner: my_app_user
+        group: my_group
 
 ## Install
 
@@ -50,7 +60,6 @@ A list of jinja templates to use and copy the generated file to the destination 
 
     ---
     roles:
-      - name: copy_files
-        src: git@github.com:adeo/kazaplan-ansible-role-copy-files.git
-        version: main
-        scm: git
+    - name: copy_files
+      src: https://github.com/franckronchetti/ansible-role-copy-files
+      version: v1.1.0
